@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TotaLite Baseline Review System v2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            height: fit-content;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h2 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .form-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .upload-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .upload-button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: white;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+
+        .upload-button:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .file-display {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #e6fffa;
+            border-radius: 6px;
+            border-left: 4px solid #48bb78;
+            font-size: 0.9rem;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .export-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .project-info {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .project-info p {
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+
+        .project-info strong {
+            color: #2d3748;
+        }
+
+        .report-section {
+            margin-bottom: 2rem;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            padding: 1.5rem;
+            background: #f7fafc;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-top: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th {
+            background: #f7fafc;
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-optimal {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-marginal {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .status-outofspec {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-warning {
+            background: #feebc8;
+            color: #7c2d12;
+            border: 1px solid #f6ad55;
+        }
+
+        .separation-issues {
+            background: #fef2f2;
+            border: 2px solid #fca5a5;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .separation-issues h3 {
+            color: #991b1b;
+            margin-bottom: 1rem;
+        }
+
+        .displacement-warning {
+            background: #fef5e7;
+            border: 2px solid #f39c12;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .displacement-warning h3 {
+            color: #d68910;
+            margin-bottom: 1rem;
+        }
+
+        .displacement-detail {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .sidebar {
+                display: none;
+            }
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .export-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>📡 TotaLite Review v2.0</h1>
+            
+            <div class="form-section">
+                <h2>Optional Settings</h2>
+                <label>Baseline Timestamp (optional):</label>
+                <input type="datetime-local" class="form-input" id="baselineDate">
+            </div>
+            
+            <div class="upload-section">
+                <h2>1️⃣ Baseline Data CSV</h2>
+                <p style="font-size: 0.85rem; color: #718096; margin-bottom: 0.5rem;">
+                    Upload CSV with baseline target measurements
+                </p>
+                <button class="upload-button" onclick="document.getElementById('baselineFile').click()">
+                    📊 Click to Upload Baseline CSV
+                </button>
+                <input type="file" id="baselineFile" accept=".csv" style="display: none;" onchange="handleBaselineUpload(this)">
+                <div id="baselineDisplay"></div>
+            </div>
+
+            <div class="upload-section">
+                <h2>2️⃣ 48-Hour Report CSV</h2>
+                <p style="font-size: 0.85rem; color: #718096; margin-bottom: 0.5rem;">
+                    Upload the 48h report from TotaLite
+                </p>
+                <button class="upload-button" onclick="document.getElementById('reportFile').click()">
+                    📈 Click to Upload 48h Report
+                </button>
+                <input type="file" id="reportFile" accept=".csv" style="display: none;" onchange="handleReportUpload(this)">
+                <div id="reportDisplay"></div>
+            </div>
+
+            <div class="upload-section">
+                <h2>3️⃣ Displacement Data CSV</h2>
+                <p style="font-size: 0.85rem; color: #718096; margin-bottom: 0.5rem;">
+                    Upload displacement measurements (optional)
+                </p>
+                <button class="upload-button" onclick="document.getElementById('displacementFile').click()">
+                    📉 Click to Upload Displacement CSV
+                </button>
+                <input type="file" id="displacementFile" accept=".csv" style="display: none;" onchange="handleDisplacementUpload(this)">
+                <div id="displacementDisplay"></div>
+            </div>
+
+            <button class="generate-btn" id="generateBtn" onclick="generateReport()" disabled>
+                🔍 Generate Baseline Review
+            </button>
+            
+            <button class="export-btn" id="exportBtn" onclick="exportToPDF()">
+                📄 Export to PDF
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div id="reportOutput">
+                <h1>Baseline Review Report</h1>
+                <div class="alert alert-success">
+                    Ready to analyze your TotaLite data. Upload your CSV files to begin.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global data storage
+        let baselineData = null;
+        let reportData = null;
+        let reportMetadata = {};
+        let displacementData = null;
+
+        // Initialize dates
+        window.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            document.getElementById('baselineDate').value = now.toISOString().slice(0, 16);
+        });
+
+        // File handlers
+        function handleBaselineUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                document.getElementById('baselineDisplay').innerHTML = 
+                    `<div class="file-display">✅ ${file.name}</div>`;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    baselineData = parseCSV(e.target.result);
+                    console.log('Baseline data loaded:', baselineData.length, 'rows');
+                    checkReady();
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function handleReportUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                document.getElementById('reportDisplay').innerHTML = 
+                    `<div class="file-display">✅ ${file.name}</div>`;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const result = parse48HourReport(e.target.result);
+                    reportData = result.data;
+                    reportMetadata = result.metadata;
+                    console.log('48h report loaded:', reportData.length, 'rows');
+                    console.log('Metadata:', reportMetadata);
+                    checkReady();
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function handleDisplacementUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                document.getElementById('displacementDisplay').innerHTML = 
+                    `<div class="file-display">✅ ${file.name}</div>`;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    displacementData = parseDisplacementCSV(e.target.result);
+                    console.log('Displacement data loaded:', displacementData.length, 'rows');
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Parse 48-hour report with metadata
+        function parse48HourReport(text) {
+            const lines = text.split('\n');
+            const metadata = {};
+            let dataStartIndex = 0;
+            
+            // Extract metadata from header lines
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.startsWith('# Project:')) {
+                    metadata.project = line.replace('# Project:', '').trim();
+                } else if (line.startsWith('# Sensor:')) {
+                    metadata.sensor = line.replace('# Sensor:', '').trim();
+                } else if (line.startsWith('# Report Period:')) {
+                    metadata.reportPeriod = line.replace('# Report Period:', '').trim();
+                } else if (line.startsWith('# Total Measurement Cycles:')) {
+                    metadata.measurementCycles = line.replace('# Total Measurement Cycles:', '').trim();
+                } else if (line.startsWith('# Best Timestamp for Separation Angles:')) {
+                    metadata.bestTimestamp = line.replace('# Best Timestamp for Separation Angles:', '').trim();
+                } else if (line.includes('Target Name') && !line.startsWith('#')) {
+                    dataStartIndex = i;
+                    break;
+                }
+            }
+            
+            // Parse the actual data
+            const dataLines = lines.slice(dataStartIndex).filter(line => line.trim() && !line.startsWith('#'));
+            if (dataLines.length === 0) return { data: [], metadata };
+            
+            // Detect delimiter
+            const firstLine = dataLines[0];
+            const delimiter = firstLine.includes('\t') ? '\t' : ',';
+            
+            // Split headers
+            const headers = firstLine.split(delimiter).map(h => h.trim());
+            console.log('48h Report headers:', headers);
+            
+            const data = [];
+            for (let i = 1; i < dataLines.length; i++) {
+                const line = dataLines[i].trim();
+                if (!line) continue;
+                
+                const values = line.split(delimiter).map(v => v.trim());
+                if (values.length >= headers.length && values[0]) {
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        let value = values[index] || '';
+                        // Replace comma with dot for decimal numbers
+                        if (typeof value === 'string' && value !== '') {
+                            value = value.replace(',', '.');
+                        }
+                        const num = parseFloat(value);
+                        row[header] = isNaN(num) || value === '' ? value : num;
+                    });
+                    data.push(row);
+                }
+            }
+            
+            return { data, metadata };
+        }
+
+        // Parse displacement CSV with proper headers
+        function parseDisplacementCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim() && !line.startsWith('#'));
+            if (lines.length === 0) return [];
+            
+            // Detect delimiter
+            let delimiter = ',';
+            if (lines[0].includes('\t')) delimiter = '\t';
+            else if (lines[0].includes(';')) delimiter = ';';
+            
+            const headers = lines[0].split(delimiter).map(h => h.trim().replace(/"/g, ''));
+            console.log('Displacement CSV headers:', headers);
+            
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(delimiter).map(v => v.trim().replace(/"/g, ''));
+                if (values.length > 1 && values[0]) {
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        let value = values[index] || '';
+                        
+                        // For timestamp columns, keep as string - DO NOT PARSE
+                        if (header.toLowerCase().includes('timestamp') || 
+                            header.toLowerCase().includes('time') || 
+                            header.toLowerCase() === 'timestamp (utc)') {
+                            row[header] = value; // Keep as string
+                        } else {
+                            // For numeric columns, parse as numbers
+                            if (typeof value === 'string') {
+                                value = value.replace(',', '.');
+                            }
+                            const num = parseFloat(value);
+                            row[header] = isNaN(num) ? value : num;
+                        }
+                    });
+                    data.push(row);
+                }
+            }
+            
+            console.log('Displacement data parsed:', data.length, 'rows');
+            if (data.length > 0) {
+                console.log('First row example:', data[0]);
+            }
+            
+            return data;
+        }
+
+        // CSV Parser
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim() && !line.startsWith('#'));
+            if (lines.length === 0) return [];
+            
+            // Detect delimiter
+            let delimiter = ',';
+            if (lines[0].includes('\t')) delimiter = '\t';
+            else if (lines[0].includes(';')) delimiter = ';';
+            
+            const headers = lines[0].split(delimiter).map(h => h.trim().replace(/"/g, ''));
+            
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(delimiter).map(v => v.trim().replace(/"/g, ''));
+                if (values.length > 1 && values[0]) {
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        let value = values[index] || '';
+                        
+                        // Handle separation angle with text
+                        if (header.includes('Separation') && typeof value === 'string' && value.includes('(')) {
+                            value = value.split('(')[0].trim();
+                        }
+                        
+                        // Replace comma with dot for decimal numbers
+                        if (typeof value === 'string') {
+                            value = value.replace(',', '.');
+                        }
+                        
+                        const num = parseFloat(value);
+                        row[header] = isNaN(num) ? value : num;
+                    });
+                    data.push(row);
+                }
+            }
+            
+            return data;
+        }
+
+        // Check if ready to generate
+        function checkReady() {
+            const ready = reportData;
+            document.getElementById('generateBtn').disabled = !ready;
+        }
+
+        // Convert gons to degrees
+        function gonToDegrees(gon) {
+            return (gon * 360) / 400;
+        }
+
+        // Analyze displacement jumps using 1-hour medians
+        function analyzeDisplacementJumps() {
+            if (!displacementData || displacementData.length === 0) {
+                return { jumps: [], summary: 'No displacement data available' };
+            }
+
+            const jumps = [];
+            const threshold = 10; // mm, applies to both positive and negative
+            
+            console.log('Starting 1-hour median displacement analysis...');
+            
+            // STEP 1: Group all data by hour windows and targets
+            const hourlyData = {};
+            
+            displacementData.forEach(row => {
+                const timestampStr = row['timestamp (UTC)'] || row['timestamp'] || row['Timestamp'];
+                const targetName = row['target_name'] || row['Target Name'] || row['Target'];
+                const horizontalDisp = parseFloat(row['horizontal_displacement (mm)'] || row['horizontal_displacement'] || 0);
+                const verticalDisp = parseFloat(row['vertical_displacement (mm)'] || row['vertical_displacement'] || 0);
+                
+                if (!targetName || !timestampStr) return;
+                
+                // Parse the timestamp and round down to the hour
+                const timestamp = new Date(timestampStr.replace(' UTC', ''));
+                if (isNaN(timestamp.getTime())) {
+                    console.log('Invalid timestamp:', timestampStr);
+                    return;
+                }
+                
+                // Create hour window key (e.g., "2025-09-17T13:00:00.000Z" for any time in the 13:00 hour)
+                const hourWindow = new Date(timestamp);
+                hourWindow.setMinutes(0, 0, 0);
+                const hourKey = hourWindow.toISOString();
+                
+                // Initialize structure if needed
+                if (!hourlyData[hourKey]) {
+                    hourlyData[hourKey] = {};
+                }
+                if (!hourlyData[hourKey][targetName]) {
+                    hourlyData[hourKey][targetName] = {
+                        horizontal: [],
+                        vertical: [],
+                        timestamps: []
+                    };
+                }
+                
+                // Collect all values for this target in this hour
+                hourlyData[hourKey][targetName].horizontal.push(horizontalDisp);
+                hourlyData[hourKey][targetName].vertical.push(verticalDisp);
+                hourlyData[hourKey][targetName].timestamps.push(timestampStr);
+            });
+            
+            // STEP 2: Calculate median for each hour/target combination
+            const hourlyMedians = {};
+            const sortedHours = Object.keys(hourlyData).sort();
+            
+            console.log(`Processing ${sortedHours.length} hour windows`);
+            
+            sortedHours.forEach(hourKey => {
+                hourlyMedians[hourKey] = {};
+                const targetsInHour = hourlyData[hourKey];
+                
+                Object.keys(targetsInHour).forEach(targetName => {
+                    const data = targetsInHour[targetName];
+                    
+                    // Calculate median for this target in this hour
+                    const horizontalMedian = calculateMedian(data.horizontal);
+                    const verticalMedian = calculateMedian(data.vertical);
+                    
+                    hourlyMedians[hourKey][targetName] = {
+                        horizontalMedian: horizontalMedian,
+                        verticalMedian: verticalMedian,
+                        sampleCount: data.horizontal.length,
+                        firstTimestamp: data.timestamps[0],
+                        lastTimestamp: data.timestamps[data.timestamps.length - 1]
+                    };
+                    
+                    console.log(`Hour ${hourKey}, Target ${targetName}: H-median=${horizontalMedian.toFixed(2)}, V-median=${verticalMedian.toFixed(2)} (${data.horizontal.length} samples)`);
+                });
+            });
+            
+            // STEP 3: Compare consecutive hourly medians to detect jumps
+            const targetLastMedian = {}; // Track last seen median for each target
+            
+            sortedHours.forEach((hourKey, hourIndex) => {
+                const hourData = hourlyMedians[hourKey];
+                const hourDate = new Date(hourKey);
+                const displayHour = `${hourDate.toISOString().replace('T', ' ').substring(0, 16)} UTC`;
+                
+                Object.keys(hourData).forEach(targetName => {
+                    const currentMedians = hourData[targetName];
+                    
+                    // Check if we have a previous median for this target
+                    if (!targetLastMedian[targetName]) {
+                        // First hour for this target - store as baseline
+                        targetLastMedian[targetName] = {
+                            horizontal: currentMedians.horizontalMedian,
+                            vertical: currentMedians.verticalMedian,
+                            hourKey: hourKey
+                        };
+                        console.log(`First median for ${targetName}: H=${currentMedians.horizontalMedian.toFixed(2)}, V=${currentMedians.verticalMedian.toFixed(2)}`);
+                    } else {
+                        // We have a previous median - calculate the jump
+                        const lastMedian = targetLastMedian[targetName];
+                        
+                        const horizontalJump = currentMedians.horizontalMedian - lastMedian.horizontal;
+                        const verticalJump = currentMedians.verticalMedian - lastMedian.vertical;
+                        
+                        console.log(`${targetName} jump check: H-jump=${horizontalJump.toFixed(2)}, V-jump=${verticalJump.toFixed(2)}`);
+                        
+                        // Check if horizontal jump exceeds threshold
+                        if (Math.abs(horizontalJump) > threshold) {
+                            jumps.push({
+                                target: targetName,
+                                type: 'Horizontal',
+                                direction: horizontalJump > 0 ? 'Positive' : 'Negative',
+                                value: horizontalJump,
+                                absValue: Math.abs(horizontalJump),
+                                timestamp: displayHour,
+                                previousValue: lastMedian.horizontal,
+                                currentValue: currentMedians.horizontalMedian,
+                                note: `${currentMedians.sampleCount} samples/hour`
+                            });
+                            console.log(`JUMP DETECTED: ${targetName} horizontal ${horizontalJump.toFixed(2)}mm at ${displayHour}`);
+                        }
+                        
+                        // Check if vertical jump exceeds threshold
+                        if (Math.abs(verticalJump) > threshold) {
+                            jumps.push({
+                                target: targetName,
+                                type: 'Vertical',
+                                direction: verticalJump > 0 ? 'Positive' : 'Negative',
+                                value: verticalJump,
+                                absValue: Math.abs(verticalJump),
+                                timestamp: displayHour,
+                                previousValue: lastMedian.vertical,
+                                currentValue: currentMedians.verticalMedian,
+                                note: `${currentMedians.sampleCount} samples/hour`
+                            });
+                            console.log(`JUMP DETECTED: ${targetName} vertical ${verticalJump.toFixed(2)}mm at ${displayHour}`);
+                        }
+                        
+                        // Update last median for this target
+                        targetLastMedian[targetName] = {
+                            horizontal: currentMedians.horizontalMedian,
+                            vertical: currentMedians.verticalMedian,
+                            hourKey: hourKey
+                        };
+                    }
+                });
+            });
+            
+            // Sort jumps by absolute value (largest first)
+            jumps.sort((a, b) => b.absValue - a.absValue);
+            
+            console.log(`Analysis complete: ${jumps.length} jumps detected from hourly medians`);
+
+            return { 
+                jumps, 
+                summary: jumps.length > 0 ? 
+                    `${jumps.length} displacement jumps exceeding ±10mm detected (hourly median analysis)` : 
+                    'No significant displacement jumps detected in hourly median analysis',
+                hourWindows: sortedHours.length,
+                hourlyMedians: hourlyMedians
+            };
+        }
+        
+        // Helper function to calculate median
+        function calculateMedian(values) {
+            if (values.length === 0) return 0;
+            const sorted = values.slice().sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            return sorted.length % 2 !== 0 
+                ? sorted[mid] 
+                : (sorted[mid - 1] + sorted[mid]) / 2;
+        }
+
+        // Generate the report
+        function generateReport() {
+            const output = document.getElementById('reportOutput');
+            
+            try {
+                // Get baseline date
+                const baselineDate = document.getElementById('baselineDate').value;
+                
+                // Analyze data
+                const separationIssues = analyzeSeparations();
+                const snrAnalysis = analyzeSNR();
+                const cqfAnalysis = analyzeCQF();
+                const uptimeAnalysis = analyzeUptime();
+                const jumpAnalysis = displacementData ? analyzeDisplacementJumps() : null;
+                
+                // Generate HTML report
+                let html = `
+                    <h1>🔍 TotaLite Baseline Review Report</h1>
+                    
+                    <div class="project-info">
+                        <p><strong>Project:</strong> ${reportMetadata.project || 'Not specified'}</p>
+                        <p><strong>Sensor:</strong> ${reportMetadata.sensor || 'Not specified'}</p>
+                        <p><strong>Report Period:</strong> ${reportMetadata.reportPeriod || 'Not specified'}</p>
+                        <p><strong>Total Measurement Cycles:</strong> ${reportMetadata.measurementCycles || 'Not specified'}</p>
+                        <p><strong>Best Timestamp for Separation:</strong> ${reportMetadata.bestTimestamp || 'Not specified'}</p>
+                        ${baselineDate ? `<p><strong>Baseline Date:</strong> ${new Date(baselineDate).toLocaleString()}</p>` : ''}
+                        <p><strong>Report Generated:</strong> ${new Date().toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">${separationIssues.length}</div>
+                            <div class="metric-label">Separation Issues</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${snrAnalysis.pass48h}/${snrAnalysis.total}</div>
+                            <div class="metric-label">Optimal 48h SNR</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${cqfAnalysis.pass48h}/${cqfAnalysis.total}</div>
+                            <div class="metric-label">Optimal 48h CQF</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${uptimeAnalysis.passCount}/${uptimeAnalysis.total}</div>
+                            <div class="metric-label">Uptime >98%</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Separation Issues Section
+                if (separationIssues.length > 0) {
+                    html += `
+                        <div class="separation-issues">
+                            <h3>⚠️ CRITICAL: Target Separation Violations (< 2°)</h3>
+                            <p>The following target pairs do not meet the minimum 2° separation requirement:</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Target</th>
+                                        <th>Closest Target</th>
+                                        <th>Separation (degrees)</th>
+                                        <th>Separation (gons)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${separationIssues.map(issue => `
+                                        <tr>
+                                            <td><strong>${issue.target}</strong></td>
+                                            <td>${issue.closest}</td>
+                                            <td style="color: red; font-weight: bold;">${issue.separationDeg.toFixed(2)}°</td>
+                                            <td style="color: red;">${issue.separationGon.toFixed(1)} gon</td>
+                                            <td><span class="status-badge status-outofspec">OUT OF SPEC</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+                
+                // Full Target Separation List
+                html += `
+                    <div class="report-section">
+                        <h2>📐 All Target Separations</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Target</th>
+                                    <th>Closest Target</th>
+                                    <th>Separation (degrees)</th>
+                                    <th>Separation (gons)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${reportData.map(row => {
+                                    const sepGon = row['Separation angle [gon]'];
+                                    const sepDeg = sepGon ? gonToDegrees(sepGon) : null;
+                                    const status = sepDeg >= 2.0 ? 'optimal' : 'outofspec';
+                                    return `
+                                        <tr>
+                                            <td><strong>${row['Target Name']}</strong></td>
+                                            <td>${row['Closest target'] || 'N/A'}</td>
+                                            <td>${sepDeg ? sepDeg.toFixed(2) + '°' : 'N/A'}</td>
+                                            <td>${sepGon ? sepGon.toFixed(1) + ' gon' : 'N/A'}</td>
+                                            <td><span class="status-badge status-${status}">${status === 'optimal' ? 'OPTIMAL' : 'OUT OF SPEC'}</span></td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                // SNR Analysis
+                html += `
+                    <div class="report-section">
+                        <h2>📡 Signal-to-Noise Ratio Analysis</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Target</th>
+                                    <th>Baseline SNR</th>
+                                    <th>Baseline Status</th>
+                                    <th>48h SNR</th>
+                                    <th>48h Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${snrAnalysis.targets.map(t => `
+                                    <tr>
+                                        <td><strong>${t.name}</strong></td>
+                                        <td>${t.baselineSNR !== null ? t.baselineSNR.toFixed(1) + ' dB' : 'N/A'}</td>
+                                        <td><span class="status-badge status-${t.baselineStatus}">${formatStatus(t.baselineStatus)}</span></td>
+                                        <td>${t.snr48h !== null ? t.snr48h.toFixed(1) + ' dB' : 'N/A'}</td>
+                                        <td><span class="status-badge status-${t.status48h}">${formatStatus(t.status48h)}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                // CQF Analysis
+                html += `
+                    <div class="report-section">
+                        <h2>🎯 Correlation Quality Factor Analysis</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Target</th>
+                                    <th>Baseline CQF</th>
+                                    <th>Baseline Status</th>
+                                    <th>48h CQF</th>
+                                    <th>48h Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${cqfAnalysis.targets.map(t => `
+                                    <tr>
+                                        <td><strong>${t.name}</strong></td>
+                                        <td>${t.baselineCQF !== null ? (t.baselineCQF * 100).toFixed(1) + '%' : 'N/A'}</td>
+                                        <td><span class="status-badge status-${t.baselineStatus}">${formatStatus(t.baselineStatus)}</span></td>
+                                        <td>${t.cqf48h !== null ? (t.cqf48h * 100).toFixed(1) + '%' : 'N/A'}</td>
+                                        <td><span class="status-badge status-${t.status48h}">${formatStatus(t.status48h)}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                // Uptime Analysis
+                html += `
+                    <div class="report-section">
+                        <h2>⏱️ Target Uptime Analysis (48h)</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Target</th>
+                                    <th>Uptime (%)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${uptimeAnalysis.targets.map(t => `
+                                    <tr>
+                                        <td><strong>${t.name}</strong></td>
+                                        <td>${t.uptime !== null ? t.uptime.toFixed(1) + '%' : 'N/A'}</td>
+                                        <td><span class="status-badge status-${t.status}">${formatStatus(t.status)}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                // Displacement Jumps Analysis - UPDATED SECTION
+                if (jumpAnalysis && jumpAnalysis.jumps.length > 0) {
+                    // Group jumps by target
+                    const jumpsByTarget = {};
+                    jumpAnalysis.jumps.forEach(jump => {
+                        if (!jumpsByTarget[jump.target]) {
+                            jumpsByTarget[jump.target] = [];
+                        }
+                        jumpsByTarget[jump.target].push(jump);
+                    });
+                    
+                    html += `
+                        <div class="displacement-warning">
+                            <h3>⚠️ Displacement Jumps Detected (>±10mm in 1-Hour Medians)</h3>
+                            <p>${jumpAnalysis.summary}</p>
+                            <p style="font-size: 0.9rem; color: #666;">Analysis based on ${jumpAnalysis.hourWindows} hour windows</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Hour Window (UTC)</th>
+                                        <th>Target</th>
+                                        <th>Type</th>
+                                        <th>Jump Value</th>
+                                        <th>Direction</th>
+                                        <th>Median Change</th>
+                                        <th>Samples</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${jumpAnalysis.jumps.map(jump => {
+                                        // Ensure timestamp is displayed as full string
+                                        const displayTimestamp = String(jump.timestamp || 'Unknown');
+                                        return `
+                                        <tr>
+                                            <td style="font-family: monospace; font-size: 0.85rem;">${displayTimestamp}</td>
+                                            <td><strong>${jump.target}</strong></td>
+                                            <td>${jump.type}</td>
+                                            <td style="color: ${Math.abs(jump.value) > 15 ? 'red' : 'orange'}; font-weight: bold;">
+                                                ${jump.value > 0 ? '+' : ''}${jump.value.toFixed(2)}mm
+                                            </td>
+                                            <td>${jump.direction}</td>
+                                            <td><small>${jump.previousValue.toFixed(2)}mm → ${jump.currentValue.toFixed(2)}mm</small></td>
+                                            <td><small>${jump.note || ''}</small></td>
+                                        </tr>
+                                    `}).join('')}
+                                </tbody>
+                            </table>
+                            <div style="margin-top: 1rem; padding: 0.5rem; background: #fffbf0; border-radius: 4px;">
+                                <strong>Summary by Target:</strong><br>
+                                ${Object.entries(jumpsByTarget).map(([target, jumps]) => {
+                                    const horizontal = jumps.filter(j => j.type === 'Horizontal').length;
+                                    const vertical = jumps.filter(j => j.type === 'Vertical').length;
+                                    return `• <strong>${target}</strong>: ${horizontal > 0 ? `${horizontal} horizontal` : ''} ${horizontal > 0 && vertical > 0 ? 'and' : ''} ${vertical > 0 ? `${vertical} vertical` : ''} hourly median jump${jumps.length > 1 ? 's' : ''}<br>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (jumpAnalysis) {
+                    html += `
+                        <div class="alert alert-success">
+                            ✅ ${jumpAnalysis.summary}
+                            ${jumpAnalysis.hourWindows ? `<br><small>Analyzed ${jumpAnalysis.hourWindows} hour windows</small>` : ''}
+                        </div>
+                    `;
+                }
+                
+                // Summary
+                const overallStatus = getOverallStatus(separationIssues, snrAnalysis, cqfAnalysis, uptimeAnalysis);
+                html += `
+                    <div class="alert alert-${overallStatus.type}">
+                        <h2>${overallStatus.icon} ${overallStatus.title}</h2>
+                        <p>${overallStatus.message}</p>
+                    </div>
+                `;
+                
+                output.innerHTML = html;
+                document.getElementById('exportBtn').style.display = 'block';
+                
+            } catch (error) {
+                output.innerHTML = `
+                    <div class="alert alert-error">
+                        <h2>❌ Error Generating Report</h2>
+                        <p>${error.message}</p>
+                        <p>Error details: ${error.stack}</p>
+                    </div>
+                `;
+                console.error('Report generation error:', error);
+            }
+        }
+
+        // Format status text
+        function formatStatus(status) {
+            switch(status) {
+                case 'optimal': return 'OPTIMAL';
+                case 'marginal': return 'MARGINAL';
+                case 'outofspec': return 'OUT OF SPEC';
+                default: return status.toUpperCase();
+            }
+        }
+
+        // Analysis functions
+        function analyzeSeparations() {
+            const issues = [];
+            const threshold = 2.0; // degrees
+            const thresholdGon = (threshold * 400) / 360; // convert to gons
+            
+            if (!reportData) return issues;
+            
+            reportData.forEach(row => {
+                const sepGon = row['Separation angle [gon]'];
+                if (sepGon !== undefined && sepGon < thresholdGon) {
+                    issues.push({
+                        target: row['Target Name'],
+                        closest: row['Closest target'],
+                        separationGon: sepGon,
+                        separationDeg: gonToDegrees(sepGon)
+                    });
+                }
+            });
+            
+            return issues;
+        }
+
+        function analyzeSNR() {
+            const targets = [];
+            let pass48h = 0;
+            
+            if (!reportData) return { targets, pass48h, total: 0 };
+            
+            reportData.forEach(row => {
+                const name = row['Target Name'];
+                const snr48h = row['SNR [dB]'];
+                
+                // Find baseline SNR if baseline data exists
+                let baselineSNR = null;
+                let baselineStatus = 'outofspec';
+                if (baselineData) {
+                    const baselineRow = baselineData.find(b => b['Target Name'] === name || b['Target'] === name);
+                    if (baselineRow) {
+                        baselineSNR = baselineRow['SNR'] || baselineRow['SNR [dB]'] || baselineRow['snr'];
+                        if (baselineSNR >= 21) baselineStatus = 'optimal';
+                        else if (baselineSNR >= 18) baselineStatus = 'marginal';
+                    }
+                }
+                
+                // Get 48h status
+                let status48h = 'outofspec';
+                if (snr48h !== null && snr48h !== undefined) {
+                    if (snr48h >= 21) {
+                        status48h = 'optimal';
+                        pass48h++;
+                    } else if (snr48h >= 18) {
+                        status48h = 'marginal';
+                    }
+                }
+                
+                targets.push({
+                    name,
+                    baselineSNR,
+                    baselineStatus,
+                    snr48h,
+                    status48h
+                });
+            });
+            
+            return { targets, pass48h, total: targets.length };
+        }
+
+        function analyzeCQF() {
+            const targets = [];
+            let pass48h = 0;
+            
+            if (!reportData) return { targets, pass48h, total: 0 };
+            
+            reportData.forEach(row => {
+                const name = row['Target Name'];
+                let cqf48h = row['CQF [-]'];
+                
+                // Find baseline CQF if baseline data exists
+                let baselineCQF = null;
+                let baselineStatus = 'outofspec';
+                if (baselineData) {
+                    const baselineRow = baselineData.find(b => b['Target Name'] === name || b['Target'] === name);
+                    if (baselineRow) {
+                        baselineCQF = baselineRow['CQF [%]'] || baselineRow['CQF'] || baselineRow['cqf'];
+                        // Convert to 0-1 range if needed
+                        if (baselineCQF > 1) baselineCQF = baselineCQF / 100;
+                        
+                        if (baselineCQF >= 0.9) baselineStatus = 'optimal';
+                        else if (baselineCQF >= 0.7) baselineStatus = 'marginal';
+                    }
+                }
+                
+                // Get 48h status
+                let status48h = 'outofspec';
+                if (cqf48h !== null && cqf48h !== undefined) {
+                    if (cqf48h >= 0.9) {
+                        status48h = 'optimal';
+                        pass48h++;
+                    } else if (cqf48h >= 0.7) {
+                        status48h = 'marginal';
+                    }
+                }
+                
+                targets.push({
+                    name,
+                    baselineCQF,
+                    baselineStatus,
+                    cqf48h,
+                    status48h
+                });
+            });
+            
+            return { targets, pass48h, total: targets.length };
+        }
+
+        function analyzeUptime() {
+            const targets = [];
+            let passCount = 0;
+            
+            if (!reportData) return { targets, passCount, total: 0 };
+            
+            reportData.forEach(row => {
+                const name = row['Target Name'];
+                const uptime = row['Target uptime [%]'];
+                
+                let status = 'outofspec';
+                if (uptime !== null && uptime !== undefined) {
+                    if (uptime >= 98) {
+                        status = 'optimal';
+                        passCount++;
+                    } else if (uptime >= 95) {
+                        status = 'marginal';
+                    }
+                }
+                
+                targets.push({
+                    name,
+                    uptime,
+                    status
+                });
+            });
+            
+            return { targets, passCount, total: targets.length };
+        }
+
+        function getOverallStatus(separations, snr, cqf, uptime) {
+            if (separations.length > 0) {
+                return {
+                    type: 'error',
+                    icon: '🔴',
+                    title: 'Critical Issues Detected',
+                    message: `${separations.length} target separation violations require immediate attention. Targets must be relocated to achieve >2° separation.`
+                };
+            }
+            
+            const snrFails = snr.targets.filter(t => t.status48h === 'outofspec').length;
+            const cqfFails = cqf.targets.filter(t => t.status48h === 'outofspec').length;
+            
+            if (snrFails > 0 || cqfFails > 0) {
+                return {
+                    type: 'warning',
+                    icon: '🟡',
+                    title: 'Quality Issues Detected',
+                    message: `${snrFails} targets with poor SNR, ${cqfFails} targets with poor CQF. Review signal quality and environmental conditions.`
+                };
+            }
+            
+            return {
+                type: 'success',
+                icon: '🟢',
+                title: 'System Ready for Monitoring',
+                message: 'All baseline requirements met. System is properly configured for long-term structural monitoring.'
+            };
+        }
+
+        function exportToPDF() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
