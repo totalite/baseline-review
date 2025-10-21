@@ -890,9 +890,9 @@
                             </thead>
                             <tbody>
                                 ${reportData.map(row => {
-                                    const sepGon = row['Separation angle [gon]'];
-                                    const sepDeg = sepGon ? gonToDegrees(sepGon) : null;
-                                    const status = sepDeg >= 2.0 ? 'optimal' : 'outofspec';
+                                    const sepGon = parseFloat(row['Separation angle [gon]']);
+                                    const sepDeg = (!isNaN(sepGon) && sepGon !== null) ? gonToDegrees(sepGon) : null;
+                                    const status = (sepDeg !== null && sepDeg >= 2.0) ? 'optimal' : 'outofspec';
                                     return `
                                         <tr>
                                             <td><strong>${row['Target Name']}</strong></td>
