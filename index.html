@@ -874,7 +874,7 @@
                     `;
                 }
                 
-                // Full Target Separation List
+                // Full Target Separation List - FIXED PARSING
                 html += `
                     <div class="report-section">
                         <h2>📐 All Target Separations</h2>
@@ -897,8 +897,8 @@
                                         <tr>
                                             <td><strong>${row['Target Name']}</strong></td>
                                             <td>${row['Closest target'] || 'N/A'}</td>
-                                            <td>${sepDeg ? sepDeg.toFixed(2) + '°' : 'N/A'}</td>
-                                            <td>${sepGon ? sepGon.toFixed(1) + ' gon' : 'N/A'}</td>
+                                            <td>${sepDeg !== null ? sepDeg.toFixed(2) + '°' : 'N/A'}</td>
+                                            <td>${!isNaN(sepGon) ? sepGon.toFixed(1) + ' gon' : 'N/A'}</td>
                                             <td><span class="status-badge status-${status}">${status === 'optimal' ? 'OPTIMAL' : 'OUT OF SPEC'}</span></td>
                                         </tr>
                                     `;
@@ -991,7 +991,7 @@
                     </div>
                 `;
                 
-                // Displacement Jumps Analysis - UPDATED SECTION
+                // Displacement Jumps Analysis
                 if (jumpAnalysis && jumpAnalysis.jumps.length > 0) {
                     // Group jumps by target
                     const jumpsByTarget = {};
@@ -1100,8 +1100,8 @@
             if (!reportData) return issues;
             
             reportData.forEach(row => {
-                const sepGon = row['Separation angle [gon]'];
-                if (sepGon !== undefined && sepGon < thresholdGon) {
+                const sepGon = parseFloat(row['Separation angle [gon]']);
+                if (!isNaN(sepGon) && sepGon < thresholdGon) {
                     issues.push({
                         target: row['Target Name'],
                         closest: row['Closest target'],
